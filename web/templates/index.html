@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grant Proposal Segments</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            height: 100px;  /* Increase height for larger text area */
+            resize: vertical;  /* Allow vertical resizing */
+            font-size: 16px;   /* Increase font size */
+            line-height: 1.5;  /* Improve readability */
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result-container {
+            margin-top: 20px;
+        }
+        .result {
+            margin: 10px 0;
+        }
+        .scale {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            position: relative;
+        }
+        .scale .indicator {
+            height: 100%;
+            background-color: #4CAF50;
+            position: absolute;
+            top: 0;
+        }
+        #grantForm {
+            display: block;
+        }
+        #results {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Form Section -->
+        <div id="grantForm">
+            <h1>Submit Your Grant Proposal Segments</h1>
+            <form onsubmit="submitForm(event)">
+                <label>Background:</label><br>
+                <textarea name="segment1"></textarea><br>
+                <label>Significance:</label><br>
+                <textarea name="segment2"></textarea><br>
+                <label>Aims:</label><br>
+                <textarea name="segment3"></textarea><br>
+                <label>Methods:</label><br>
+                <textarea name="segment4"></textarea><br>
+                <label>Outcome:</label><br>
+                <textarea name="segment5"></textarea><br>
+                <label>Resource:</label><br>
+                <textarea name="segment6"></textarea><br>
+                <label>Conclusion:</label><br>
+                <textarea name="segment7"></textarea><br>
+                <label>Members:</label><br>
+                <textarea name="segment8"></textarea><br>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+
+        <!-- Results Section (Initially hidden) -->
+        <div id="results" class="result-container">
+            <h2>Results</h2>
+        </div>
+    </div>
+
+    <script>
+        async function submitForm(event) {
+            event.preventDefault();
+            const form = document.querySelector('form');
+            const formData = new FormData(form);
+
+            const response = await fetch('/process', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            displayResults(result);
+        }
+
+
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '<h2>Results</h2>'; // Reset the results container
+
+            // Loop over the dictionary and create scales for each result
+            for (const [key, value] of Object.entries(data)) {
+                const resultDiv = document.createElement('div');
+                resultDiv.classList.add('result');
+                resultDiv.innerHTML = `
+                    <h4>${key}</h4>
+                    <div class="scale">
+                        <div class="indicator" style="width: ${value * 100}%;"></div>
+                    </div>
+                    <p>Value: ${value.toFixed(2)}</p>
+                `;
+                resultsContainer.appendChild(resultDiv);
+            }
+
+            // Hide the form and show the results
+            document.getElementById('grantForm').style.display = 'none';
+            resultsContainer.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
